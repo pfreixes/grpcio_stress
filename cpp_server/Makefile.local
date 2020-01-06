@@ -1,0 +1,23 @@
+_default: cpp_server
+
+CXX = g++
+CXXFLAGS += -std=c++11
+LDFLAGS += -lgrpc\
+           -lgrpc++\
+		   -lprotobuf\
+           -ldl
+
+clean:
+	rm *.o cpp_server
+
+cpp_server: echo.pb.o echo.grpc.pb.o cpp_server.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+protos:
+	protoc -I ../proto/ --cpp_out=. ../proto/echo.proto
+	protoc -I ../proto/ --grpc_out=. --plugin=/usr/local/Cellar/grpc/1.26.0/bin/grpc_cpp_plugin ../proto/echo.proto
+
+run:
+	./cpp_server
+
+.PHONY: protos cpp_server
