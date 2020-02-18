@@ -11,9 +11,12 @@
 #include <grpcpp/impl/codegen/channel_interface.h>
 #include <grpcpp/impl/codegen/client_unary_call.h>
 #include <grpcpp/impl/codegen/client_callback.h>
-#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
 #include <grpcpp/impl/codegen/rpc_service_method.h>
 #include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
+#include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 namespace echo {
@@ -37,19 +40,27 @@ Echo::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
 }
 
 void Echo::Stub::experimental_async::Hi(::grpc::ClientContext* context, const ::echo::EchoRequest* request, ::echo::EchoReply* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, std::move(f));
 }
 
 void Echo::Stub::experimental_async::Hi(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::echo::EchoReply* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, std::move(f));
+}
+
+void Echo::Stub::experimental_async::Hi(::grpc::ClientContext* context, const ::echo::EchoRequest* request, ::echo::EchoReply* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, reactor);
+}
+
+void Echo::Stub::experimental_async::Hi(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::echo::EchoReply* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Hi_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::echo::EchoReply>* Echo::Stub::AsyncHiRaw(::grpc::ClientContext* context, const ::echo::EchoRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::echo::EchoReply>::Create(channel_.get(), cq, rpcmethod_Hi_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::echo::EchoReply>::Create(channel_.get(), cq, rpcmethod_Hi_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::echo::EchoReply>* Echo::Stub::PrepareAsyncHiRaw(::grpc::ClientContext* context, const ::echo::EchoRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::echo::EchoReply>::Create(channel_.get(), cq, rpcmethod_Hi_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::echo::EchoReply>::Create(channel_.get(), cq, rpcmethod_Hi_, context, request, false);
 }
 
 Echo::Service::Service() {

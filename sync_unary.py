@@ -1,6 +1,8 @@
 import argparse
 import time
+import uvloop
 import grpc
+from grpc.experimental import aio
 from threading import Thread, Lock, Condition
 
 from proto import echo_pb2
@@ -99,8 +101,16 @@ def benchmark(seconds=DEFAULT_SECONDS, concurrency=DEFAULT_CONCURRENCY):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--concurrency', type=int, default=DEFAULT_CONCURRENCY)
+    parser.add_argument('-u', '--uvloop', action='store_true')
     parser.add_argument('-s', '--seconds', type=int, default=DEFAULT_SECONDS)
+    parser.add_argument('-a', '--asyncio', action='store_true')
     args = parser.parse_args()
 
+    if args.asyncio:
+        print("Using Asyncio under the hood")
+        if args.uvloop:
+            print("Using uvloop loop version")
+            uvloop.install()
+        aio.init_grpc_aio()
     print("Starting benchmark with concurrency {} during {} seconds".format(args.concurrency, args.seconds))
     benchmark(seconds=args.seconds, concurrency=args.concurrency)
